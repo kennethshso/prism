@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World SPA</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        nav {
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        #app {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        p {
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div id="app">
+        </div>
+
+    <script>
+        // 1. Define our "Views"
+        const routes = {
+            '#home': {
+                title: 'Hello World!',
+                content: 'Welcome to your first Single Page Application. No reloads, just pure JavaScript magic.'
+            },
+            '#about': {
+                title: 'About This App',
+                content: 'This is a lightweight SPA built with vanilla JS. It uses the URL hash to track state.'
+            },
+            '#contact': {
+                title: 'Say Hello',
+                content: 'Need help? Just check the console or keep coding! The world is your oyster.'
+            }
+        };
+
+        // 2. The Router function
+        function router() {
+            const app = document.getElementById('app');
+            const hash = window.location.hash || '#home';
+            const route = routes[hash] || routes['#home'];
+
+            // Inject content with a quick fade animation
+            app.innerHTML = `
+                <div class="fade-in">
+                    <h1>${route.title}</h1>
+                    <p>${route.content}</p>
+                </div>
+            `;
+        }
+
+        // 3. Listen for changes
+        window.addEventListener('hashchange', router);
+        window.addEventListener('load', router);
+    </script>
+</body>
+</html>
