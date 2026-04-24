@@ -42,6 +42,11 @@
       "name": "QR Code",
       "url": "/#qr-generator",
       "description": "即時生成 QR Code"
+    },
+    {
+      "name": "計算機",
+      "url": "/#calculator",
+      "description": "四則運算計算機"
     }
   ]
 }

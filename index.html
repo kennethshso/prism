@@ -186,6 +186,7 @@
     .card-icon.url  { background: rgba(139, 101, 53, 0.12); }
     .card-icon.pomo { background: rgba(176, 122,  74, 0.12); }
     .card-icon.qr   { background: rgba( 92, 122,  92, 0.12); }
+    .card-icon.calc { background: rgba(100,  90, 130, 0.12); }
 
     .card-title {
       font-size: 1rem;
@@ -472,6 +473,82 @@
       border-radius: 8px;
     }
 
+    /* ── CALCULATOR ───────────────────────────────────────────────── */
+    .calc-wrap { display: flex; flex-direction: column; gap: 0; }
+
+    .calc-display {
+      background: var(--text);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 1.25rem 1.5rem 1rem;
+      text-align: right;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 0.25rem;
+      overflow: hidden;
+    }
+
+    .calc-expr {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.4);
+      min-height: 1.2em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .calc-val {
+      font-size: 2.75rem;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .calc-btn {
+      background: var(--card);
+      border: none;
+      font-family: inherit;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 0;
+      height: 72px;
+      cursor: pointer;
+      transition: background 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calc-btn:active { background: #ede7dc; }
+
+    .calc-btn.fn   { background: #EDE5D8; color: var(--text); font-size: 1rem; }
+    .calc-btn.fn:active { background: #DDD6C8; }
+
+    .calc-btn.op   { background: var(--accent); color: #fff; }
+    .calc-btn.op:active  { background: #9A6838; }
+    .calc-btn.op.active  { background: #fff; color: var(--accent); }
+
+    .calc-btn.eq   { background: var(--primary); color: #fff; }
+    .calc-btn.eq:active  { background: var(--primary-h); }
+
+    .calc-btn.zero { grid-column: span 2; justify-content: flex-start; padding-left: 1.625rem; }
+
     /* ── FOOTER ───────────────────────────────────────────────────── */
     footer {
       background: var(--surface);
@@ -514,6 +591,7 @@
       <a href="#url-shortener">縮短網址</a>
       <a href="#pomodoro">番茄時鐘</a>
       <a href="#qr-generator">QR Code</a>
+      <a href="#calculator">計算機</a>
     </nav>
   </div>
 </header>
@@ -566,6 +644,13 @@ function renderHome() {
       icon: '▦',
       title: 'QR Code 產生器',
       desc: '輸入文字或網址，即時生成 QR Code，可下載圖片。',
+    },
+    {
+      hash: 'calculator',
+      cls: 'calc',
+      icon: '🧮',
+      title: '計算機',
+      desc: '支援四則運算、百分比、正負號切換，鍵盤亦可操作。',
     },
   ];
 
@@ -908,6 +993,176 @@ function initQRGenerator() {
   });
 }
 
+function renderCalculator() {
+  const rows = [
+    [
+      { label: 'AC', cls: 'fn', action: 'clear' },
+      { label: '±',  cls: 'fn', action: 'sign' },
+      { label: '%',  cls: 'fn', action: 'pct' },
+      { label: '÷',  cls: 'op', action: '/' },
+    ],
+    [
+      { label: '7', action: '7' },
+      { label: '8', action: '8' },
+      { label: '9', action: '9' },
+      { label: '×', cls: 'op', action: '*' },
+    ],
+    [
+      { label: '4', action: '4' },
+      { label: '5', action: '5' },
+      { label: '6', action: '6' },
+      { label: '−', cls: 'op', action: '-' },
+    ],
+    [
+      { label: '1', action: '1' },
+      { label: '2', action: '2' },
+      { label: '3', action: '3' },
+      { label: '+', cls: 'op', action: '+' },
+    ],
+    [
+      { label: '0', cls: 'zero', action: '0' },
+      { label: '.', action: '.' },
+      { label: '=', cls: 'eq', action: '=' },
+    ],
+  ];
+
+  const btns = rows.map(row =>
+    row.map(b =>
+      `<button class="calc-btn ${b.cls || ''}" data-action="${b.action}">${b.label}</button>`
+    ).join('')
+  ).join('');
+
+  return `
+    <div class="tool-page fade-in">
+      <a class="back-btn" href="#home">← 返回工具列表</a>
+      <div class="tool-header">
+        <h2>🧮 計算機</h2>
+        <p>四則運算、百分比，支援鍵盤輸入。</p>
+      </div>
+      <div class="calc-wrap">
+        <div class="calc-display">
+          <div class="calc-expr" id="calc-expr"></div>
+          <div class="calc-val"  id="calc-val">0</div>
+        </div>
+        <div class="calc-grid">${btns}</div>
+      </div>
+    </div>
+  `;
+}
+
+function initCalculator() {
+  // State
+  let display   = '0';
+  let prev      = null;
+  let operator  = null;
+  let fresh     = false; // next digit starts a new number
+
+  const valEl  = document.getElementById('calc-val');
+  const exprEl = document.getElementById('calc-expr');
+
+  function formatNum(n) {
+    const s = parseFloat(n.toPrecision(12)).toString();
+    return s.length > 12 ? parseFloat(n.toPrecision(9)).toString() : s;
+  }
+
+  function render() {
+    valEl.textContent = display;
+    // highlight active operator button
+    document.querySelectorAll('.calc-btn.op').forEach(b => {
+      b.classList.toggle('active', !fresh && b.dataset.action === operator);
+    });
+  }
+
+  function applyOp(a, op, b) {
+    switch (op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
+      case '/': return b === 0 ? 'Error' : a / b;
+    }
+  }
+
+  function handleAction(action) {
+    if (action >= '0' && action <= '9') {
+      if (fresh || display === '0') { display = action; fresh = false; }
+      else if (display.replace('-', '').replace('.', '').length < 9) display += action;
+      render(); return;
+    }
+
+    if (action === '.') {
+      if (fresh) { display = '0.'; fresh = false; }
+      else if (!display.includes('.')) display += '.';
+      render(); return;
+    }
+
+    if (action === 'clear') {
+      display = '0'; prev = null; operator = null; fresh = false;
+      exprEl.textContent = '';
+      render(); return;
+    }
+
+    if (action === 'sign') {
+      display = display.startsWith('-') ? display.slice(1) : (display === '0' ? '0' : '-' + display);
+      render(); return;
+    }
+
+    if (action === 'pct') {
+      const n = parseFloat(display);
+      display = formatNum(operator ? prev * n / 100 : n / 100);
+      render(); return;
+    }
+
+    // Operator or equals
+    const cur = parseFloat(display);
+
+    if (operator && !fresh) {
+      const result = applyOp(prev, operator, cur);
+      exprEl.textContent = result === 'Error' ? '' : `${prev} ${operator === '*' ? '×' : operator === '/' ? '÷' : operator} ${cur} =`;
+      display = result === 'Error' ? 'Error' : formatNum(result);
+      prev = result === 'Error' ? null : result;
+    } else {
+      prev = cur;
+    }
+
+    if (action === '=') {
+      operator = null;
+    } else {
+      operator = action;
+      if (action !== '=') exprEl.textContent = '';
+    }
+    fresh = true;
+    render();
+  }
+
+  // Button clicks
+  document.querySelector('.calc-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.calc-btn');
+    if (btn) handleAction(btn.dataset.action);
+  });
+
+  // Keyboard support
+  function onKey(e) {
+    const map = {
+      '0':'0','1':'1','2':'2','3':'3','4':'4',
+      '5':'5','6':'6','7':'7','8':'8','9':'9',
+      '.':'.', '+':'+', '-':'-', '*':'*', '/':'/',
+      'Enter':'=', '=':'=', 'Backspace':'clear', 'Escape':'clear',
+      '%':'pct',
+    };
+    if (map[e.key] !== undefined) { e.preventDefault(); handleAction(map[e.key]); }
+  }
+  document.addEventListener('keydown', onKey);
+
+  // Clean up keyboard listener when user navigates away
+  const orig = window.onhashchange;
+  window.addEventListener('hashchange', function cleanup() {
+    document.removeEventListener('keydown', onKey);
+    window.removeEventListener('hashchange', cleanup);
+  }, { once: true });
+
+  render();
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════
@@ -917,6 +1172,7 @@ const routes = {
   '#url-shortener': { render: renderURLShortener,  init: initURLShortener },
   '#pomodoro':      { render: renderPomodoro,      init: initPomodoro },
   '#qr-generator':  { render: renderQRGenerator,   init: initQRGenerator },
+  '#calculator':    { render: renderCalculator,    init: initCalculator },
 };
 
 function router() {
