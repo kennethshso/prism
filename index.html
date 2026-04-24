@@ -1,125 +1,950 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World SPA</title>
-    <style>
-        :root {
-            --primary: #6366f1;
-            --bg: #f8fafc;
-            --text: #1e293b;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prism Tools — 日常小工具集</title>
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#8B6535">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Prism">
+  <link rel="apple-touch-icon" href="icon.svg">
 
-        nav {
-            margin-bottom: 2rem;
-            background: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
+  <!-- SEO / Social -->
+  <meta name="description" content="縮短網址、番茄時鐘、QR Code 產生器 — 日常小工具，一個地方搞定。">
 
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 600;
-            transition: color 0.2s;
-        }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        nav a:hover {
-            color: var(--primary);
-        }
+  <!-- QR Code lib (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-        #app {
-            text-align: center;
-            background: white;
-            padding: 3rem;
-            border-radius: 24px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            max-width: 400px;
-            width: 90%;
-        }
+  <style>
+    /* ── DESIGN TOKENS ────────────────────────────────────────────── */
+    :root {
+      --bg:        #F4EFE4;
+      --surface:   #FDFBF7;
+      --card:      #FFFFFF;
+      --primary:   #8B6535;
+      --primary-h: #73521F;
+      --accent:    #B07A4A;
+      --green:     #5C7A5C;
+      --green-h:   #4A6449;
+      --text:      #2D2417;
+      --muted:     #8B7D6B;
+      --border:    #DDD4C4;
+      --shadow:    rgba(45, 36, 23, 0.08);
+      --radius:    12px;
+      --radius-lg: 20px;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
+    /* ── RESET ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        p {
-            line-height: 1.6;
-            opacity: 0.8;
-        }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-        .fade-in {
-            animation: fadeIn 0.4s ease-in;
-        }
+    /* ── HEADER ───────────────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .brand img, .brand svg { width: 28px; height: 28px; border-radius: 7px; }
+
+    .brand-name { color: var(--primary); }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    nav a:hover { color: var(--text); background: var(--bg); }
+
+    /* ── MAIN ─────────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    /* ── HERO (compact) ───────────────────────────────────────────── */
+    .hero {
+      padding: 2.5rem 0 1.25rem;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: rgba(139, 101, 53, 0.1);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.375rem, 3vw, 1.875rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.375rem;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 0.9375rem;
+    }
+
+    /* ── TOOL CARD GRID ───────────────────────────────────────────── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+      padding: 1.5rem 0 3.5rem;
+    }
+
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.625rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .tool-card:hover {
+      box-shadow: 0 8px 28px var(--shadow);
+      transform: translateY(-3px);
+      border-color: #C9BBA8;
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .card-icon.url  { background: rgba(139, 101, 53, 0.12); }
+    .card-icon.pomo { background: rgba(176, 122,  74, 0.12); }
+    .card-icon.qr   { background: rgba( 92, 122,  92, 0.12); }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: auto;
+      transition: gap 0.15s;
+    }
+
+    .tool-card:hover .card-cta { gap: 0.6rem; }
+
+    /* ── TOOL PAGE CHROME ─────────────────────────────────────────── */
+    .tool-page {
+      padding: 2rem 0 4rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.15s;
+    }
+
+    .back-btn:hover { color: var(--text); }
+
+    .tool-header {
+      margin-bottom: 2rem;
+    }
+
+    .tool-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.25rem;
+    }
+
+    .tool-header p { color: var(--muted); font-size: 0.9375rem; }
+
+    /* ── SHARED FORM ELEMENTS ─────────────────────────────────────── */
+    .input-row {
+      display: flex;
+      gap: 0.625rem;
+    }
+
+    .field {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.6875rem 1rem;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+
+    .field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(139, 101, 53, 0.12);
+    }
+
+    .field::placeholder { color: var(--muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.6875rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1.5px solid transparent;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-h); border-color: var(--primary-h); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: #B0A090; background: var(--bg); }
+
+    .btn-green { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn-green:hover { background: var(--green-h); border-color: var(--green-h); }
+
+    .btn-sm { padding: 0.4rem 0.875rem; font-size: 0.8125rem; }
+
+    /* ── URL SHORTENER ────────────────────────────────────────────── */
+    .url-tool { display: flex; flex-direction: column; gap: 1rem; }
+
+    .result-box {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.875rem 1.125rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      animation: fadeSlideIn 0.25s ease;
+    }
+
+    .result-url {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--primary);
+      word-break: break-all;
+    }
+
+    .error-msg {
+      font-size: 0.875rem;
+      color: #a83228;
+      padding: 0.625rem 1rem;
+      background: rgba(168, 50, 40, 0.07);
+      border: 1px solid rgba(168, 50, 40, 0.18);
+      border-radius: 8px;
+      animation: fadeSlideIn 0.25s ease;
+    }
+
+    /* ── POMODORO ─────────────────────────────────────────────────── */
+    .pomodoro-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .mode-pills {
+      display: flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .mode-pill {
+      padding: 0.375rem 1.25rem;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.25s;
+      user-select: none;
+    }
+
+    .mode-pill.active          { background: var(--primary); color: #fff; }
+    .mode-pill.active.is-break { background: var(--green);   color: #fff; }
+
+    /* SVG ring */
+    .ring-wrap {
+      position: relative;
+      width: 210px;
+      height: 210px;
+    }
+
+    .ring-svg {
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 9;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-dasharray: 534.07; /* 2π × 85 */
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.55s ease, stroke 0.4s ease;
+    }
+
+    .ring-progress.is-break { stroke: var(--green); }
+
+    .ring-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-time {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ring-mode {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .pomo-session-info {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .pomo-controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    /* ── QR GENERATOR ─────────────────────────────────────────────── */
+    .qr-wrap { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .qr-output {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: 2.5rem 2rem;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      min-height: 220px;
+      transition: border-color 0.2s;
+    }
+
+    .qr-output.has-qr { border-color: #C9BBA8; }
+
+    .qr-placeholder {
+      font-size: 0.9375rem;
+      color: var(--muted);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .qr-placeholder-icon {
+      font-size: 2.5rem;
+      opacity: 0.3;
+    }
+
+    #qr-canvas-wrap canvas,
+    #qr-canvas-wrap img {
+      display: block;
+      border-radius: 8px;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.125rem 1.5rem;
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+
+    /* ── ANIMATIONS ───────────────────────────────────────────────── */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeSlideIn 0.3s ease; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      nav { display: none; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; }
+      .ring-time { font-size: 2.25rem; }
+      .ring-wrap { width: 180px; height: 180px; }
+      .hero { padding: 1.75rem 0 1rem; }
+    }
+  </style>
 </head>
 <body>
 
+<!-- ── HEADER ──────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <a class="brand" href="#home">
+      <img src="icon.svg" alt="Prism">
+      <span class="brand-name">Prism</span>
+    </a>
     <nav>
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+      <a href="#url-shortener">縮短網址</a>
+      <a href="#pomodoro">番茄時鐘</a>
+      <a href="#qr-generator">QR Code</a>
     </nav>
+  </div>
+</header>
 
-    <div id="app">
+<!-- ── MAIN (router target) ────────────────────────────────────────── -->
+<main id="app"></main>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────── -->
+<footer>© 2025 Prism Tools · 日常小工具，一個地方搞定</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// POMODORO STATE  (module-level — survives route changes)
+// ═══════════════════════════════════════════════════════════════════
+const FOCUS_SECS = 25 * 60;
+const BREAK_SECS = 5 * 60;
+
+const pomo = {
+  interval: null,
+  running: false,
+  mode: 'focus',         // 'focus' | 'break'
+  remaining: FOCUS_SECS,
+  total: FOCUS_SECS,
+  sessions: 0,           // completed focus sessions
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// PAGE RENDERERS
+// ═══════════════════════════════════════════════════════════════════
+
+function renderHome() {
+  const tools = [
+    {
+      hash: 'url-shortener',
+      cls: 'url',
+      icon: '🔗',
+      title: '縮短網址',
+      desc: '輸入長網址，即時生成短連結，一鍵複製方便分享。',
+    },
+    {
+      hash: 'pomodoro',
+      cls: 'pomo',
+      icon: '🍅',
+      title: '番茄時鐘',
+      desc: '25 分鐘專注 + 5 分鐘休息循環，提升工作效率。',
+    },
+    {
+      hash: 'qr-generator',
+      cls: 'qr',
+      icon: '▦',
+      title: 'QR Code 產生器',
+      desc: '輸入文字或網址，即時生成 QR Code，可下載圖片。',
+    },
+  ];
+
+  const cards = tools.map(t => `
+    <a class="tool-card" href="#${t.hash}">
+      <div class="card-icon ${t.cls}">${t.icon}</div>
+      <div>
+        <div class="card-title">${t.title}</div>
+        <div class="card-desc">${t.desc}</div>
+      </div>
+      <span class="card-cta">開啟工具 →</span>
+    </a>
+  `).join('');
+
+  return `
+    <div class="hero">
+      <span class="hero-eyebrow">Everyday Toolkit</span>
+      <h1>把常用工具放在一起</h1>
+      <p class="hero-sub">簡單、快速、無廣告 — 選一個工具開始吧</p>
+    </div>
+    <div class="tools-grid">${cards}</div>
+  `;
+}
+
+function renderURLShortener() {
+  return `
+    <div class="tool-page fade-in">
+      <a class="back-btn" href="#home">← 返回工具列表</a>
+      <div class="tool-header">
+        <h2>🔗 縮短網址</h2>
+        <p>輸入長網址，生成短連結，一鍵複製。</p>
+      </div>
+      <div class="url-tool">
+        <div class="input-row">
+          <input class="field" type="url" id="url-input"
+            placeholder="https://example.com/very/long/url..."
+            autocomplete="off" spellcheck="false">
+          <button class="btn btn-primary" id="url-btn">縮短</button>
         </div>
+        <div id="url-result"></div>
+      </div>
+    </div>
+  `;
+}
 
-    <script>
-        // 1. Define our "Views"
-        const routes = {
-            '#home': {
-                title: 'Hello World!',
-                content: 'Welcome to your first Single Page Application. No reloads, just pure JavaScript magic.'
-            },
-            '#about': {
-                title: 'About This App',
-                content: 'This is a lightweight SPA built with vanilla JS. It uses the URL hash to track state.'
-            },
-            '#contact': {
-                title: 'Say Hello',
-                content: 'Need help? Just check the console or keep coding! The world is your oyster.'
-            }
-        };
+function renderPomodoro() {
+  const CIRC = 534.07;
+  const { mode, remaining, total, running, sessions } = pomo;
+  const isBreak = mode === 'break';
+  const mins = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const secs = String(remaining % 60).padStart(2, '0');
+  const offset = (CIRC * (1 - remaining / total)).toFixed(2);
 
-        // 2. The Router function
-        function router() {
-            const app = document.getElementById('app');
-            const hash = window.location.hash || '#home';
-            const route = routes[hash] || routes['#home'];
+  return `
+    <div class="tool-page fade-in">
+      <a class="back-btn" href="#home">← 返回工具列表</a>
+      <div class="tool-header">
+        <h2>🍅 番茄時鐘</h2>
+        <p>專注工作，定時休息，讓效率持續保持。</p>
+      </div>
+      <div class="pomodoro-wrap">
+        <div class="mode-pills">
+          <div class="mode-pill ${!isBreak ? 'active' : ''}" id="pill-focus">專注 25m</div>
+          <div class="mode-pill ${isBreak ? 'active is-break' : ''}" id="pill-break">休息 5m</div>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="210" height="210" viewBox="0 0 210 210">
+            <circle class="ring-track" cx="105" cy="105" r="85"/>
+            <circle class="ring-progress ${isBreak ? 'is-break' : ''}"
+              id="ring-prog"
+              cx="105" cy="105" r="85"
+              stroke-dasharray="${CIRC}"
+              stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="ring-label">
+            <span class="ring-time" id="pomo-time">${mins}:${secs}</span>
+            <span class="ring-mode" id="pomo-mode-lbl">${isBreak ? 'REST' : 'FOCUS'}</span>
+          </div>
+        </div>
+        <p class="pomo-session-info" id="pomo-sessions">
+          已完成 <strong>${sessions}</strong> 個專注回合
+        </p>
+        <div class="pomo-controls">
+          <button class="btn btn-ghost" id="pomo-reset">重設</button>
+          <button class="btn ${running ? 'btn-ghost' : isBreak ? 'btn-green' : 'btn-primary'}"
+            id="pomo-toggle">${running ? '⏸ 暫停' : '▶ 開始'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-            // Inject content with a quick fade animation
-            app.innerHTML = `
-                <div class="fade-in">
-                    <h1>${route.title}</h1>
-                    <p>${route.content}</p>
-                </div>
-            `;
-        }
+function renderQRGenerator() {
+  return `
+    <div class="tool-page fade-in">
+      <a class="back-btn" href="#home">← 返回工具列表</a>
+      <div class="tool-header">
+        <h2>▦ QR Code 產生器</h2>
+        <p>輸入任意文字或網址，即時生成可下載的 QR Code。</p>
+      </div>
+      <div class="qr-wrap">
+        <div class="input-row">
+          <input class="field" type="text" id="qr-input"
+            placeholder="輸入網址或任意文字…"
+            autocomplete="off" spellcheck="false">
+        </div>
+        <div class="qr-output" id="qr-output">
+          <div class="qr-placeholder" id="qr-ph">
+            <span class="qr-placeholder-icon">▦</span>
+            輸入內容後將顯示 QR Code
+          </div>
+          <div id="qr-canvas-wrap" style="display:none"></div>
+          <button class="btn btn-primary btn-sm" id="qr-dl" style="display:none">⬇ 下載圖片</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-        // 3. Listen for changes
-        window.addEventListener('hashchange', router);
-        window.addEventListener('load', router);
-    </script>
+// ═══════════════════════════════════════════════════════════════════
+// TOOL INITIALISERS
+// ═══════════════════════════════════════════════════════════════════
+
+function initURLShortener() {
+  const input  = document.getElementById('url-input');
+  const btn    = document.getElementById('url-btn');
+  const result = document.getElementById('url-result');
+
+  async function shorten() {
+    const raw = input.value.trim();
+    if (!raw) { input.focus(); return; }
+
+    // Validate URL
+    let parsed;
+    try {
+      parsed = new URL(raw);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
+    } catch {
+      result.innerHTML = `<div class="error-msg">請輸入有效的網址（需以 http:// 或 https:// 開頭）</div>`;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '處理中…';
+    result.innerHTML = '';
+
+    try {
+      const res = await fetch(
+        `https://is.gd/create.php?format=json&url=${encodeURIComponent(parsed.href)}`
+      );
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      if (data.shorturl) {
+        result.innerHTML = `
+          <div class="result-box">
+            <a class="result-url" href="${data.shorturl}" target="_blank" rel="noopener">
+              ${data.shorturl}
+            </a>
+            <button class="btn btn-ghost btn-sm" id="copy-btn">複製</button>
+          </div>`;
+
+        document.getElementById('copy-btn').addEventListener('click', function () {
+          navigator.clipboard.writeText(data.shorturl).then(() => {
+            this.textContent = '✓ 已複製';
+            setTimeout(() => { if (this.isConnected) this.textContent = '複製'; }, 2000);
+          }).catch(() => {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = data.shorturl;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            this.textContent = '✓ 已複製';
+            setTimeout(() => { if (this.isConnected) this.textContent = '複製'; }, 2000);
+          });
+        });
+      } else {
+        const msg = data.errormessage || '縮短失敗，請稍後再試';
+        result.innerHTML = `<div class="error-msg">${msg}</div>`;
+      }
+    } catch {
+      result.innerHTML = `<div class="error-msg">網路錯誤，無法連接縮短服務，請稍後再試。</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '縮短';
+    }
+  }
+
+  btn.addEventListener('click', shorten);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') shorten(); });
+}
+
+function initPomodoro() {
+  const CIRC = 534.07;
+
+  function updateUI() {
+    const { mode, remaining, total, running, sessions } = pomo;
+    const isBreak = mode === 'break';
+    const mins = String(Math.floor(remaining / 60)).padStart(2, '0');
+    const secs = String(remaining % 60).padStart(2, '0');
+
+    const timeEl    = document.getElementById('pomo-time');
+    const ringEl    = document.getElementById('ring-prog');
+    const modeEl    = document.getElementById('pomo-mode-lbl');
+    const toggleBtn = document.getElementById('pomo-toggle');
+    const sessEl    = document.getElementById('pomo-sessions');
+    const pillFocus = document.getElementById('pill-focus');
+    const pillBreak = document.getElementById('pill-break');
+
+    if (!timeEl) return; // navigated away
+
+    timeEl.textContent = `${mins}:${secs}`;
+
+    const offset = (CIRC * (1 - remaining / total)).toFixed(2);
+    ringEl.style.strokeDashoffset = offset;
+    ringEl.classList.toggle('is-break', isBreak);
+
+    modeEl.textContent = isBreak ? 'REST' : 'FOCUS';
+
+    pillFocus.classList.toggle('active', !isBreak);
+    pillFocus.classList.remove('is-break');
+    pillBreak.classList.toggle('active', isBreak);
+    pillBreak.classList.toggle('is-break', isBreak);
+
+    toggleBtn.textContent = running ? '⏸ 暫停' : '▶ 開始';
+    toggleBtn.className = `btn ${running ? 'btn-ghost' : isBreak ? 'btn-green' : 'btn-primary'}`;
+
+    sessEl.innerHTML = `已完成 <strong>${sessions}</strong> 個專注回合`;
+
+    // Keep browser tab title updated
+    document.title = running ? `${mins}:${secs} · Prism` : 'Prism Tools';
+  }
+
+  function tick() {
+    if (pomo.remaining > 0) {
+      pomo.remaining--;
+      updateUI();
+      return;
+    }
+
+    // Session ended — switch mode
+    const wasBreak = pomo.mode === 'break';
+    if (!wasBreak) pomo.sessions++;
+
+    pomo.mode      = wasBreak ? 'focus' : 'break';
+    pomo.total     = pomo.mode === 'focus' ? FOCUS_SECS : BREAK_SECS;
+    pomo.remaining = pomo.total;
+
+    if (Notification.permission === 'granted') {
+      new Notification('Prism 番茄時鐘', {
+        body: pomo.mode === 'break'
+          ? '專注結束！好好休息 5 分鐘 🎉'
+          : '休息結束，重新出發！🍅',
+      });
+    }
+
+    updateUI();
+  }
+
+  const toggleBtn = document.getElementById('pomo-toggle');
+  const resetBtn  = document.getElementById('pomo-reset');
+
+  toggleBtn.addEventListener('click', () => {
+    if (pomo.running) {
+      clearInterval(pomo.interval);
+      pomo.interval = null;
+      pomo.running  = false;
+    } else {
+      if (Notification.permission === 'default') Notification.requestPermission();
+      pomo.running  = true;
+      pomo.interval = setInterval(tick, 1000);
+    }
+    updateUI();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    clearInterval(pomo.interval);
+    pomo.interval = null;
+    pomo.running  = false;
+    pomo.mode      = 'focus';
+    pomo.remaining = FOCUS_SECS;
+    pomo.total     = FOCUS_SECS;
+    document.title = 'Prism Tools';
+    updateUI();
+  });
+}
+
+function initQRGenerator() {
+  const input    = document.getElementById('qr-input');
+  const ph       = document.getElementById('qr-ph');
+  const wrap     = document.getElementById('qr-canvas-wrap');
+  const output   = document.getElementById('qr-output');
+  const dlBtn    = document.getElementById('qr-dl');
+  let debounce   = null;
+
+  function generate(text) {
+    wrap.innerHTML = '';
+
+    if (!text) {
+      ph.style.display   = '';
+      wrap.style.display = 'none';
+      dlBtn.style.display = 'none';
+      output.classList.remove('has-qr');
+      return;
+    }
+
+    ph.style.display    = 'none';
+    wrap.style.display  = '';
+    dlBtn.style.display = '';
+    output.classList.add('has-qr');
+
+    // eslint-disable-next-line no-new
+    new QRCode(wrap, {
+      text,
+      width: 220,
+      height: 220,
+      colorDark: '#2D2417',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => generate(input.value.trim()), 300);
+  });
+
+  dlBtn.addEventListener('click', () => {
+    // qrcodejs renders a canvas (hidden) + an img element
+    const img = wrap.querySelector('img');
+    const canvas = wrap.querySelector('canvas');
+    const src = img ? img.src : (canvas ? canvas.toDataURL('image/png') : null);
+    if (!src) return;
+    const a = document.createElement('a');
+    a.download = 'qrcode-prism.png';
+    a.href = src;
+    a.click();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════════════════════════
+
+const routes = {
+  '#home':          { render: renderHome,         init: null },
+  '#url-shortener': { render: renderURLShortener,  init: initURLShortener },
+  '#pomodoro':      { render: renderPomodoro,      init: initPomodoro },
+  '#qr-generator':  { render: renderQRGenerator,   init: initQRGenerator },
+};
+
+function router() {
+  const hash  = window.location.hash || '#home';
+  const route = routes[hash] || routes['#home'];
+
+  // Restore title when not on pomodoro
+  if (hash !== '#pomodoro' && !pomo.running) {
+    document.title = 'Prism Tools — 日常小工具集';
+  }
+
+  const app = document.getElementById('app');
+  app.innerHTML = route.render();
+  if (route.init) route.init();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('load', router);
+
+// ═══════════════════════════════════════════════════════════════════
+// PWA — Service Worker
+// ═══════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
 </body>
 </html>

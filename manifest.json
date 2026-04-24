@@ -1,0 +1,47 @@
+{
+  "name": "Prism Tools",
+  "short_name": "Prism",
+  "description": "縮短網址、番茄時鐘、QR Code 產生器 — 日常小工具，一個地方搞定。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F4EFE4",
+  "theme_color": "#8B6535",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "縮短網址",
+      "url": "/#url-shortener",
+      "description": "輸入長網址生成短連結"
+    },
+    {
+      "name": "番茄時鐘",
+      "url": "/#pomodoro",
+      "description": "25 分鐘專注計時器"
+    },
+    {
+      "name": "QR Code",
+      "url": "/#qr-generator",
+      "description": "即時生成 QR Code"
+    }
+  ]
+}
