@@ -47,6 +47,11 @@
       "name": "計算機",
       "url": "/#calculator",
       "description": "四則運算計算機"
+    },
+    {
+      "name": "膳食卡路里",
+      "url": "/#meal-calc",
+      "description": "計算每餐卡路里總和"
     }
   ]
 }

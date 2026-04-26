@@ -1,4 +1,4 @@
-const CACHE = 'prism-v2';
+const CACHE = 'prism-v3';
 
 const PRECACHE = [
   '/',
