@@ -448,5 +448,111 @@
         </div>
     </div>
 
+    <!-- ── Aladdin Interface Requirements – Discretionary Model ── -->
+    <div class="req-section">
+        <h2 class="req-section-title">Aladdin Interface Requirements</h2>
+        <div class="req-scope">Discretionary Model</div>
+
+        <div class="req-cards">
+
+            <!-- MODEL_INFO -->
+            <div class="req-card">
+                <div class="req-card-title">
+                    MODEL_INFO
+                    <span class="new-pill">New</span>
+                </div>
+                <div class="req-card-file">File sent to Aladdin</div>
+                <ul class="req-list">
+                    <li>
+                        <span class="req-field">ID</span> — Model ID used to identify the model.
+                        Must be consistent between <code>MODEL_INFO.ID</code>,
+                        <code>MODEL_POSITION_DATA.PORTFOLIO_ID</code> and
+                        <code>SECURITY_MASTER.REF_HOLDINGS_MODEL_ID</code>.
+                    </li>
+                    <li>
+                        <span class="req-field">NAME</span> — Name of the model reflected in the front end.
+                    </li>
+                    <li>
+                        <span class="req-field">CURRENCY</span> — Currency of the model.
+                    </li>
+                    <li>
+                        <span class="req-field">MODEL_TYPE</span> — Value must be set to
+                        <span class="req-note">'Captive Fund'</span>.
+                    </li>
+                    <li>
+                        <span class="req-field">FAMILY</span> — Grouping name displayed in the front end.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MODEL_POSITION_DATA -->
+            <div class="req-card">
+                <div class="req-card-title">MODEL_POSITION_DATA</div>
+                <div class="req-card-file">File sent to Aladdin</div>
+                <ul class="req-list">
+                    <li>
+                        <span class="req-field">POS_DATE</span> — Date of the file.
+                    </li>
+                    <li>
+                        <span class="req-field">PORTFOLIO_ID</span> — ID of the model.
+                        Must match <code>MODEL_INFO.ID</code> and
+                        <code>SECURITY_MASTER.REF_HOLDINGS_MODEL_ID</code>.
+                    </li>
+                    <li>
+                        <span class="req-field">CLIENT_ID</span> — CLIENT_ID of the corresponding
+                        security found in the <span class="req-note">SECURITY_MASTER</span> file.
+                    </li>
+                    <li>
+                        <span class="req-field">WEIGHT</span> — Weight of the position.
+                        Total weight must sum to <strong>1</strong>.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- SECURITY_MASTER -->
+            <div class="req-card">
+                <div class="req-card-title">SECURITY_MASTER</div>
+                <div class="req-card-file">File sent to Aladdin</div>
+                <ul class="req-list">
+                    <li>
+                        <span class="req-field">SEC_ID</span> — SEC_ID of the DM Model.
+                        Displayed on the front end as the CLIENT_ID of the DM Model.
+                    </li>
+                    <li>
+                        <span class="req-field">CLIENT_SEC_TYPE</span> — <span class="req-note">Funds</span>
+                    </li>
+                    <li>
+                        <span class="req-field">CLIENT_SEC_TYPE2</span> — <span class="req-note">Funds</span>
+                    </li>
+                    <li>
+                        <span class="req-field">CD_INSTMT_TYPE</span> — <span class="req-note">Funds</span>
+                    </li>
+                    <li>
+                        <span class="req-field">DESC_INSTMT</span> — Name of the model security displayed on the front end.
+                    </li>
+                    <li>
+                        <span class="req-field">CURRENCY</span> — Currency of the model.
+                    </li>
+                    <li>
+                        <span class="req-field">REF_NT_PRODUCT_TYPE</span> — <span class="req-note">PT_OT_DM_DISCRETIONARY</span>
+                    </li>
+                    <li>
+                        <span class="req-field">REF_HOLDINGS_MODEL_ID</span> — Must match
+                        <code>MODEL_INFO.ID</code> and <code>MODEL_POSITION_DATA.PORTFOLIO_ID</code>.
+                    </li>
+                    <li>
+                        <span class="req-field">MODEL_TYPE</span>
+                    </li>
+                    <li style="color:#888; font-style:italic">
+                        Other columns populated whenever relevant (e.g. PRISM_LITE, PI_STATUS, etc.)
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="height:3rem"></div>
+
 </body>
 </html>
