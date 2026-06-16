@@ -11,7 +11,7 @@
             --text: #333333;
             --nav-bg: #000000;
             --nav-text: #FFFFFF;
-            --node-h: 72px;
+            --node-h: 110px;
             --gap: 1rem;
         }
 
@@ -96,6 +96,27 @@
             font-size: 0.72rem;
             color: #595959;
             margin-top: 0.3rem;
+        }
+
+        .node-desc {
+            font-size: 0.65rem;
+            color: #888;
+            margin-top: 0.45rem;
+            line-height: 1.4;
+            max-width: 140px;
+            font-style: italic;
+        }
+
+        .node-new {
+            display: inline-block;
+            background: #DB0011;
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.45rem;
+            margin-bottom: 0.35rem;
         }
 
         /* ── Sources column ── */
@@ -202,12 +223,16 @@
         <!-- Three data sources -->
         <div class="sources-col">
             <div class="node">
+                <div class="node-new">New</div>
                 <div class="node-tag">Advisory Reference</div>
                 <div class="node-label">ISM / PRD</div>
+                <div class="node-desc">Front-end upload screen — user manually prepares &amp; submits model</div>
             </div>
             <div class="node">
+                <div class="node-new">New</div>
                 <div class="node-tag">Discretionary</div>
                 <div class="node-label">ISM / PRD</div>
+                <div class="node-desc">Front-end upload screen — user manually prepares &amp; submits model</div>
             </div>
             <div class="node">
                 <div class="node-tag">Discretionary</div>
