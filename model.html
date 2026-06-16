@@ -11,6 +11,8 @@
             --text: #333333;
             --nav-bg: #000000;
             --nav-text: #FFFFFF;
+            --node-h: 72px;
+            --gap: 1rem;
         }
 
         * { box-sizing: border-box; }
@@ -42,62 +44,46 @@
             transition: color 0.2s;
         }
 
-        nav a:hover {
-            color: var(--primary);
-        }
+        nav a:hover { color: var(--primary); }
 
         .page-title {
             font-size: 1.4rem;
             font-weight: 700;
             color: var(--text);
-            margin: 3rem 0 0.6rem;
+            margin: 3rem 0 2.5rem;
             letter-spacing: 0.01em;
             text-align: center;
         }
 
-        .badge {
-            display: inline-block;
-            background: var(--primary);
-            color: #FFFFFF;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 0.3rem 0.8rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .divider {
-            width: 90%;
-            max-width: 600px;
-            border: none;
-            border-top: 1px solid #DDD4C4;
-            margin: 2.5rem 0;
-        }
-
-        .diagram {
+        /* ── Main flow row ── */
+        .flow {
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0;
-            padding: 0 1.5rem;
+            padding: 0 1.5rem 3rem;
         }
 
+        /* ── Node cards ── */
         .node {
             background: #FFFFFF;
             border-top: 4px solid var(--primary);
             box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
-            padding: 1.5rem 2rem;
+            padding: 0 1.8rem;
             text-align: center;
-            min-width: 130px;
+            min-width: 120px;
+            min-height: var(--node-h);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .node-tag {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #595959;
+            margin-bottom: 0.35rem;
         }
 
         .node-label {
@@ -112,14 +98,40 @@
             margin-top: 0.3rem;
         }
 
-        .arrow {
+        /* ── Sources column ── */
+        .sources-col {
             display: flex;
-            align-items: center;
-            padding: 0 4px;
+            flex-direction: column;
+            gap: var(--gap);
         }
 
+        /* ── Merge bracket ──
+           Height stretches to match the sources column.
+           padding-top/bottom = half of node-h so the top/bottom
+           borders land on the centre of each source node.          */
+        .bracket {
+            align-self: stretch;
+            width: 36px;
+            /* 72px / 2 = 36px */
+            padding-top: calc(var(--node-h) / 2);
+            padding-bottom: calc(var(--node-h) / 2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bracket .half {
+            flex: 1;
+            border-right: 2px solid var(--primary);
+        }
+
+        .bracket .half.top { border-top: 2px solid var(--primary); }
+        .bracket .half.bot { border-bottom: 2px solid var(--primary); }
+
+        /* ── Arrows ── */
+        .arrow { display: flex; align-items: center; }
+
         .arrow-shaft {
-            width: 48px;
+            width: 44px;
             height: 2px;
             background: var(--primary);
             position: relative;
@@ -135,19 +147,33 @@
             border-bottom: 6px solid transparent;
         }
 
-        @media (max-width: 540px) {
-            .diagram {
+        /* ── Mobile: stack vertically ── */
+        @media (max-width: 580px) {
+            .flow {
                 flex-direction: column;
+                align-items: center;
             }
 
-            .arrow {
-                flex-direction: column;
-                padding: 4px 0;
+            .sources-col {
+                width: 100%;
+                max-width: 200px;
             }
+
+            .bracket {
+                align-self: auto;
+                width: 2px;
+                height: 32px;
+                padding: 0;
+                background: var(--primary);
+            }
+
+            .bracket .half { display: none; }
+
+            .arrow { flex-direction: column; }
 
             .arrow-shaft {
                 width: 2px;
-                height: 40px;
+                height: 36px;
             }
 
             .arrow-shaft::after {
@@ -171,49 +197,45 @@
 
     <h1 class="page-title">Data Flow Model</h1>
 
-    <div class="section">
-        <span class="badge">Advisory Reference Model</span>
-        <div class="diagram">
+    <div class="flow">
+
+        <!-- Two ISM/PRD sources -->
+        <div class="sources-col">
             <div class="node">
+                <div class="node-tag">Advisory Reference</div>
                 <div class="node-label">ISM / PRD</div>
-                <div class="node-sub">Source</div>
             </div>
-            <div class="arrow"><div class="arrow-shaft"></div></div>
             <div class="node">
-                <div class="node-label">iHub</div>
-                <div class="node-sub">Integration Hub</div>
-            </div>
-            <div class="arrow"><div class="arrow-shaft"></div></div>
-            <div class="node">
-                <div class="node-label">Aladdin Wealth</div>
-                <div class="node-sub">Destination</div>
+                <div class="node-tag">Discretionary</div>
+                <div class="node-label">ISM / PRD</div>
             </div>
         </div>
-    </div>
 
-    <hr class="divider">
-
-    <div class="section">
-        <span class="badge">Discretionary Model</span>
-        <div class="diagram">
-            <div class="node">
-                <div class="node-label">ISM / PRD</div>
-                <div class="node-sub">Source</div>
-            </div>
-            <div class="arrow"><div class="arrow-shaft"></div></div>
-            <div class="node">
-                <div class="node-label">iHub</div>
-                <div class="node-sub">Integration Hub</div>
-            </div>
-            <div class="arrow"><div class="arrow-shaft"></div></div>
-            <div class="node">
-                <div class="node-label">Aladdin Wealth</div>
-                <div class="node-sub">Destination</div>
-            </div>
+        <!-- Bracket: merges both sources into one line -->
+        <div class="bracket">
+            <div class="half top"></div>
+            <div class="half bot"></div>
         </div>
-    </div>
 
-    <div style="height:3rem"></div>
+        <!-- Arrow into iHub -->
+        <div class="arrow"><div class="arrow-shaft"></div></div>
+
+        <!-- Single iHub aggregator block -->
+        <div class="node">
+            <div class="node-label">iHub</div>
+            <div class="node-sub">Integration Hub</div>
+        </div>
+
+        <!-- Arrow into Aladdin -->
+        <div class="arrow"><div class="arrow-shaft"></div></div>
+
+        <!-- Single Aladdin Wealth block -->
+        <div class="node">
+            <div class="node-label">Aladdin Wealth</div>
+            <div class="node-sub">Destination</div>
+        </div>
+
+    </div>
 
 </body>
 </html>
