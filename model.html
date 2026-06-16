@@ -168,7 +168,118 @@
             border-bottom: 6px solid transparent;
         }
 
-        /* ── Mobile: stack vertically ── */
+        /* ── Interface requirements section ── */
+        .req-section {
+            width: 100%;
+            max-width: 860px;
+            padding: 0 1.5rem 3rem;
+        }
+
+        .req-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            border-left: 4px solid var(--primary);
+            padding-left: 0.75rem;
+            margin: 0 0 1.25rem;
+        }
+
+        .req-scope {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            background: var(--primary);
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .req-cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .req-card {
+            background: #FFFFFF;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+            padding: 1.25rem 1.5rem;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .req-card-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 0.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .req-card-title .new-pill {
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.1rem 0.4rem;
+        }
+
+        .req-card-file {
+            font-size: 0.68rem;
+            color: #888;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .req-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .req-list li {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            color: var(--text);
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .req-list li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .req-field {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .req-note {
+            display: inline;
+            background: #FFF3F3;
+            color: #8B0000;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0 0.3rem;
+        }
+
+        @media (max-width: 580px) {
+            .req-cards { flex-direction: column; }
+        }
         @media (max-width: 580px) {
             .flow {
                 flex-direction: column;
@@ -271,6 +382,70 @@
             <div class="node-sub">Destination</div>
         </div>
 
+    </div>
+
+    <div style="height:2rem"></div>
+
+    <!-- ── Aladdin Interface Requirements – Advisory Reference Model ── -->
+    <div class="req-section">
+        <h2 class="req-section-title">Aladdin Interface Requirements</h2>
+        <div class="req-scope">Advisory Reference Model</div>
+
+        <div class="req-cards">
+
+            <!-- MODEL_INFO -->
+            <div class="req-card">
+                <div class="req-card-title">
+                    MODEL_INFO
+                    <span class="new-pill">New</span>
+                </div>
+                <div class="req-card-file">File sent to Aladdin</div>
+                <ul class="req-list">
+                    <li>
+                        <span class="req-field">ID</span> — Model ID used to identify the model.
+                        Must be consistent between <code>MODEL_INFO.ID</code> and <code>MODEL_POSITION_DATA.PORTFOLIO_ID</code>.
+                    </li>
+                    <li>
+                        <span class="req-field">NAME</span> — Name of the model portfolio,
+                        reflected in the front end.
+                    </li>
+                    <li>
+                        <span class="req-field">CURRENCY</span> — Currency of the model portfolio.
+                    </li>
+                    <li>
+                        <span class="req-field">MODEL_TYPE</span> — Value must be set to
+                        <span class="req-note">'Model'</span>.
+                    </li>
+                    <li>
+                        <span class="req-field">FAMILY</span> — Grouping name displayed in the front end.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MODEL_POSITION_DATA -->
+            <div class="req-card">
+                <div class="req-card-title">MODEL_POSITION_DATA</div>
+                <div class="req-card-file">File sent to Aladdin</div>
+                <ul class="req-list">
+                    <li>
+                        <span class="req-field">POS_DATE</span> — Date of the file.
+                    </li>
+                    <li>
+                        <span class="req-field">PORTFOLIO_ID</span> — ID of the model.
+                        Must match <code>MODEL_INFO.ID</code>.
+                    </li>
+                    <li>
+                        <span class="req-field">CLIENT_ID</span> — CLIENT_ID of the corresponding
+                        security found in the <span class="req-note">SECURITY_MASTER</span> file.
+                    </li>
+                    <li>
+                        <span class="req-field">WEIGHT</span> — Weight of the position.
+                        Total weight across all positions must sum to <strong>1</strong>.
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
 
 </body>
